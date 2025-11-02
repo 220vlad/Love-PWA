@@ -1,0 +1,24 @@
+{
+    "name": "love-pwa",
+    "version": "1.0.0",
+    "description": "PWA приложение для знакомств",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "log": "node scripts/update-version.js",
+        "log:add": "node scripts/update-version.js Добавлено",
+        "log:fix": "node scripts/update-version.js Исправлено",
+        "log:change": "node scripts/update-version.js Изменено"
+    },
+    "devDependencies": {
+        "axios": "^1.6.0",
+        "laravel-vite-plugin": "^1.0",
+        "vite": "^5.0"
+    },
+    "dependencies": {
+        "socket.io-client": "^4.5.4"
+    }
+}

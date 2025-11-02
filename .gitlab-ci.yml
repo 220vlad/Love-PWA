@@ -1,0 +1,35 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  APP_ENV: production
+
+build:
+  stage: build
+  image: node:18
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - public/build
+    expire_in: 1 hour
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SERVER_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - rsync -avz --delete --exclude='.git' --exclude='node_modules' --exclude='.env' ./ $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+    - ssh $SERVER_USER@$SERVER_HOST "cd $SERVER_PATH && composer install --no-dev --optimize-autoloader && php artisan migrate --force && php artisan optimize"
+  only:
+    - main
+
